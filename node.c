@@ -3,7 +3,7 @@
 
 
 void node_init(node_t *node, int x, int y, double value)
-/* Inicjalizacja wezla */
+/* Node initialization */
 {
 	node->x = x;
 	node->y = y;

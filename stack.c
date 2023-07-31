@@ -5,16 +5,16 @@
 
 
 void init_stack(stack_t *stack)
-/* Inicjalizacja stosu */
+/* Initialize the stack */
 {
 	stack->nodes = malloc(sizeof(node_t) * 8);
 	stack->n = 0;
-	stack->capacity=8;
+	stack->capacity = 8;
 }
 
 
 void stack_add_memory(stack_t *stack)
-/* Podwaja pamiec stosu jesci jest taka potrzeba */
+/* Doubles the memory of the stack if necessary */
 {
 	stack->nodes = realloc(stack->nodes, sizeof(node_t) * stack->capacity * 2);
 	stack->capacity *= 2;
@@ -22,7 +22,7 @@ void stack_add_memory(stack_t *stack)
 
 
 void stack_add(stack_t *stack, node_t *node)
-/* Dodaje element na gore stosu */
+/* Adds an element to the top of the stack */
 {
 	if (stack->n + 1 > stack->capacity)
 		stack_add_memory(stack);
@@ -32,14 +32,14 @@ void stack_add(stack_t *stack, node_t *node)
 
 
 void stack_pop(stack_t *stack)
-/* Usuwa element z gory stosu */
+/* Removes an element from the top of the stack */
 {
 	stack->n--;
 }
 
 
 int is_on_stack(stack_t *stack, node_t *node)
-/* Sprawdza czy podany element znajduje sie na stosie */
+/* Checks if the given element is on the stack */
 {
 	int i;
 
@@ -55,7 +55,7 @@ int is_on_stack(stack_t *stack, node_t *node)
 
 
 void print_stack(stack_t *stack)
-/* Wyswietla zawartosc stosu */
+/* Displays the contents of the stack */
 {
 	int i;
 
@@ -69,7 +69,8 @@ void print_stack(stack_t *stack)
 }
 
 void free_stack(stack_t *stack)
-/* Zwalnia pamiec stosu */
+/* Frees the memory used by the stack */
 {
 	free(stack->nodes);
 }
+

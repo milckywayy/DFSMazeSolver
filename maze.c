@@ -4,23 +4,23 @@
 #include "stack.h"
 
 
-/* Polaczenia wezlow sa okreslane w nastepujacy sposob */
-/* NULL - nie ma przjescia lub jeszcze nie sprawdzono */
-/* 0 - gora */
-/* 1 - prawo */
-/* 2 - dol */
-/* 3 - lewo */
+/* Node connections are determined as follows */
+/* NULL - no passage or not checked yet */
+/* 0 - up */
+/* 1 - right */
+/* 2 - down */
+/* 3 - left */
 
 
 int get_rand(int n)
-/* Zwraca losowa loiczbe z przedzialu <0;n-1> */
+/* Returns a random number in the range <0;n-1> */
 {
 	return rand() % n;
 }
 
 
 int is_node(node_t *a, node_t *b)
-/* Porownuje dwa wezly. 1 - sa takie same, 0 - sa inne */
+/* Compares two nodes. 1 - they are the same, 0 - they are different */
 {
 	if (a->x == b->x && a->y == b->y)
 		return 1;
@@ -30,7 +30,7 @@ int is_node(node_t *a, node_t *b)
 
 
 int have_connection(node_t *a, node_t *b)
-/* Sprawdza czy podane wezly maja ze soba polaczenie. 1- maja, 0 - nie maja */
+/* Checks if the given nodes have a connection. 1 - they have, 0 - they don't */
 {
 	int i;
 
@@ -51,7 +51,7 @@ int have_connection(node_t *a, node_t *b)
 
 
 int is_end_path(node_t *head, node_t *end_node)
-/* Sprawdza czy z podanego punktu jest mozliwe przejscie do konca labiryntu */
+/* Checks if there is a possible path to the end of the maze from the given point */
 {
 	int i;
 	int v;
@@ -75,7 +75,7 @@ int is_end_path(node_t *head, node_t *end_node)
 
 
 node_t *get_next_node(node_t **nodes, node_t *head, int dir, node_t *start_node, node_t *end_node)
-/* Sprawdza czy moze zostac utworzone polaczenie. Jesli tak - zwraca nastepny wezel. Jesli nie - NULL */
+/* Checks if a connection can be made. If so, returns the next node. Otherwise, returns NULL */
 {
 	int x = head->x;
 	int y = head->y;
@@ -85,19 +85,19 @@ node_t *get_next_node(node_t **nodes, node_t *head, int dir, node_t *start_node,
 
 	node_t *next_node = NULL;
 
-	/* Zakladamy, ze przypadki "wypadniecia" z labiryntu zostaly sprawdzone poza funckja */
+	/* Assuming cases of going out of the maze have been checked outside the function */
 	switch (dir)
 	{
-		case 0: /* Gora */
+		case 0: /* Up */
 			nx--;
 			break;
-		case 1: /* Prawo */
+		case 1: /* Right */
 			ny++;
 			break;
-		case 2: /* Dol */
+		case 2: /* Down */
 			nx++;
 			break;
-		case 3: /* Lewo */
+		case 3: /* Left */
 			ny--;
 			break;
 		default:
@@ -107,7 +107,7 @@ node_t *get_next_node(node_t **nodes, node_t *head, int dir, node_t *start_node,
 	
 	next_node = &(nodes[nx][ny]);
 	
-	/* Wezel koncowy moze miec wiele sciezek do niego prowadzacych */
+	/* The end node can have multiple paths leading to it */
 	if (is_node(next_node, end_node) == 1 && !have_connection(head, next_node))
 	{
 		if (end_node->prev_c > 0 && get_rand(2) == 0)
@@ -118,7 +118,7 @@ node_t *get_next_node(node_t **nodes, node_t *head, int dir, node_t *start_node,
 			return NULL;
 	}
 
-	/* Jesli wezel nie jest koncowym i ma poprzednikow to odpada */
+	/* If the node is not the end node and already has predecessors, it's not valid */
 	if (next_node->prev_c > 0)
 	{
 		return NULL;
@@ -129,7 +129,7 @@ node_t *get_next_node(node_t **nodes, node_t *head, int dir, node_t *start_node,
 
 
 int double_connect(node_t *a, node_t *b, node_t *end_node)
-/* Tworzy podwojne polaczenie wezlow */
+/* Creates a double connection between nodes */
 {
 	if (have_connection(a, b) == 0 && 
 	   is_end_path(a, end_node) == 1 && is_end_path(b, end_node) == 1)
@@ -148,7 +148,7 @@ int double_connect(node_t *a, node_t *b, node_t *end_node)
 
 
 int make_double_connection(node_t **nodes, int rows, int cols, node_t *end_node)
-/* Szuka wezlow ktore mozna ze soba podwojnie polaczyc. To takie, ktore prowadza do konca labiryntu */
+/* Looks for nodes that can be doubly connected. These are nodes that lead to the end of the maze */
 {
 	int i;
 	int j;
@@ -195,7 +195,7 @@ int make_double_connection(node_t **nodes, int rows, int cols, node_t *end_node)
 
 
 node_t *generate_maze(node_t **nodes, int rows, int cols, node_t *head, int prev, node_t *start_node, node_t *end_node,stack_t*stack)
-/* Rekurencyjna funkcja tworzaca odnoge labiryntu */
+/* Recursive function to create a branch of the maze */
 {	
 	int x = head->x;
 	int y = head->y;
@@ -205,33 +205,33 @@ node_t *generate_maze(node_t **nodes, int rows, int cols, node_t *head, int prev
 	
 	node_t *next_node = NULL;
 
-	/* Jesli wezel koncowy to wychodzimy */
+	/* If it's the end node, we return */
 	if (is_node(head, end_node))
 	{
 		return head;
 	}	
 
-	/* Petla dopoki nie zostana sprawdzone wszystkie kierunki dla jednego wezla */
+	/* Loop until all directions for one node have been checked */
 	while (checked[0] == 0 || checked[1] == 0 || checked[2] == 0 || checked[3] == 0) 
 	{
-		/* Pobieramy nowy kierunek <0;3> */
+		/* Get a new direction <0;3> */
 		dir = get_rand(4);
 		switch(dir)
 		{
 			case 0:
-				/* Gora */
-				if (x > 0 && prev != 2 && checked[dir] == 0) /* Czy nie wychodzi poza labirynt */
+				/* Up */
+				if (x > 0 && prev != 2 && checked[dir] == 0) /* Make sure it doesn't go out of the maze */
 				{
-					/* Jesli nowy wezel nie spelnia warunkow to nie tworzymy polaczenia */
+					/* If the new node doesn't meet the requirements, don't create a connection */
 					if ((next_node = get_next_node(nodes, head, dir, start_node, end_node)) != NULL)
 					{
-						/* Inkrementujemy licznik poprzednikow by nie polaczyc sie z tym wezlem ponownie */
+						/* Increment the predecessor counter to prevent connecting back to this node */
 						next_node->prev_c++;
 
 						stack_add(stack, head);
 
-						/* Wywolujemy funkcje i gdy kiedys dostaniemy wskaznik na nastepny wezel,
-						 * zapisujemy go jako nastepce aktualnego */
+						/* Call the function recursively and when we get a pointer to the next node,
+						   save it as the successor of the current node */
 						head->next[head->next_c++] = generate_maze(nodes, rows, cols, next_node,dir,start_node,end_node, stack);
 						return head;
 					}
@@ -239,7 +239,7 @@ node_t *generate_maze(node_t **nodes, int rows, int cols, node_t *head, int prev
 				checked[dir] = 1;
 				break;
 			case 1:
-				/* Prawo */
+				/* Right */
 				if (y < cols - 1 && prev != 3 && checked[dir] == 0)
 				{
 					if ((next_node = get_next_node(nodes, head, dir, start_node, end_node)) != NULL)
@@ -255,7 +255,7 @@ node_t *generate_maze(node_t **nodes, int rows, int cols, node_t *head, int prev
 				checked[dir] = 1;
 				break;
 			case 2:
-				/* Dol */
+				/* Down */
 				if (x < rows - 1 && prev != 0 && checked[dir] == 0)
 				{
 					if ((next_node = get_next_node(nodes, head, dir, start_node, end_node)) != NULL)
@@ -271,7 +271,7 @@ node_t *generate_maze(node_t **nodes, int rows, int cols, node_t *head, int prev
 				checked[dir] = 1;
 				break;
 			case 3:
-				/* Lewo */
+				/* Left */
 				if (y > 0 && prev != 1 && checked[dir] == 0)
 				{
 					if ((next_node = get_next_node(nodes, head, dir, start_node, end_node)) != NULL)
@@ -294,7 +294,7 @@ node_t *generate_maze(node_t **nodes, int rows, int cols, node_t *head, int prev
 
 
 char get_node_char(int n)
-/* Jesli liczba jest wieksza od 9 to zamieniamy ja na kolejne litery alfabetu */
+/* If the number is greater than 9, it is converted to the next letter in the alphabet */
 {
 	char c;
 
@@ -310,13 +310,13 @@ char get_node_char(int n)
 
 
 void print_maze(node_t **nodes, int rows, int cols, node_t *start_node, node_t *end_node)
-/* Wyswietla wygenerowany labirynt, wezly poczatkowe i koncowe */
+/* Displays the generated maze, start, and end nodes */
 {
 	int i, j, k;
 
 	printf("\n");
-	printf("Wezel startowy: %d%d\n", start_node->x, start_node->y);
-	printf("Wezel koncowy: %d%d\n", end_node->x, end_node->y);
+	printf("Start node: %d%d\n", start_node->x, start_node->y);
+	printf("End node: %d%d\n", end_node->x, end_node->y);
 
 	for (i = 0; i < rows; i++)
 	{
@@ -384,13 +384,13 @@ void print_maze(node_t **nodes, int rows, int cols, node_t *start_node, node_t *
 	}
 	printf("\n\n");
 
-	printf("Przejscia wezlow:\n");
+	printf("Node connections:\n");
 	for (int i = 0; i < rows; i++)
 	{
 		for(int j = 0; j < cols; j++)
 		{
 			if (nodes[i][j].next_c == 0)
-				printf("%c%c: brak   ", get_node_char(nodes[i][j].x), get_node_char(nodes[i][j].y));
+				printf("%c%c: none   ", get_node_char(nodes[i][j].x), get_node_char(nodes[i][j].y));
 
 			for (int k = 0; k < ((nodes[i][j]).next_c); k++)
 			{
@@ -401,7 +401,7 @@ void print_maze(node_t **nodes, int rows, int cols, node_t *start_node, node_t *
 		printf("\n");
 	}
 
-	printf("\nWagi wezlow:\n");
+	printf("\nNode weights:\n");
 	for (int i = 0; i < rows; i++)
 	{
 		for(int j = 0; j < cols; j++)
@@ -411,3 +411,4 @@ void print_maze(node_t **nodes, int rows, int cols, node_t *start_node, node_t *
 		printf("\n");
 	}
 }
+

@@ -1,19 +1,20 @@
 typedef struct node
 {
-	/* Pozycja wezla */
-	int x;
-	int y;
+        /* Node position */
+        int x;
+        int y;
 
-	/* Waga */
-	double value;
+        /* Weight */
+        double value;
 
-	/* Ile wezlow ma polaczenie do tego */
-	int prev_c;
+        /* Number of nodes connected to this one */
+        int prev_c;
 
-	/* Do ilu i jakich wezlow mamy polaczenie */
-	int next_c;
-	struct node *next[4];
+        /* Nodes connected to this one and on which side */
+        int next_c;
+        struct node *next[4];
 } node_t;
 
 
-void node_init(node_t *, int, int, double);
+void node_init(node_t *node, int x, int y, double value);
+
