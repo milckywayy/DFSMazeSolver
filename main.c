@@ -34,7 +34,7 @@ void help()
     printf("\theight - height of the maze. Range <2; inf>\n");
     printf("\twidth - width of the maze. Range <2; inf>\n");
     printf("\tstart x - range <1; width>\n");
-    printf("\tstart y - range <1; width>\n");
+    printf("\tend x - range <1; width>\n");
 }
 
 int main(int argc, char **argv)
